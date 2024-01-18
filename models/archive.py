@@ -1,9 +1,11 @@
 from pymongo import MongoClient
 from os import environ as env
 
-client = MongoClient("mongodb://localhost:27017/")
 DB = env.get('DB')
+DB_URL = env.get('DB_URL')
 COLLECTION = env.get('COLLECTION')
+
+client = MongoClient(DB_URL)
 
 archives = client[f"{DB}"][F"{COLLECTION}"]
 
