@@ -1,11 +1,14 @@
 import ampalibe
 from ampalibe import Model, Messenger
+from ampalibe.messenger import Filetype
 from os import environ as env
 from utils import is_user
 from views.action import get_main_options, is_continue, upload_archive_data
 from views.template import search_result_views
 from models.archive import create_db_archive, get_all_archives, get_title_archive, get_db_archive
 import rapidfuzz
+import re
+
 
 GET_PASSWORD_INPUT = env.get('GET_PASSWORD_INPUT')
 GET_SEARCHKEY_INPUT = env.get('GET_SEARCHKEY_INPUT')
@@ -26,6 +29,9 @@ query = Model()
 chat.get_started()
 
 is_logged = False
+
+var_records = []
+
 
 @ampalibe.command('/')
 def main(sender_id, cmd, **ext):
@@ -51,12 +57,15 @@ def logout(sender_id, cmd, **ext):
 @ampalibe.command('/archive')
 def archive(sender_id, cmd, id_item, **ext):
     archive = get_db_archive(id_item)
-    chat.send_text(sender_id,
-    f"""*{archive['title']}*
+    chat.send_text(sender_id, archive['title'])
+    pattern = re.compile(r'^https://scontent\.xx\.fbcdn\.net/')
 
-    {archive['records']}
-    """
-    )
+    for one_message in archive['records']:
+        if pattern.match(one_message):
+            print(one_message)
+            chat.send_file_url(sender_id, one_message, filetype=Filetype.image)
+        else:
+            chat.send_text(sender_id, one_message)
     is_continue(sender_id, chat, "")
 
 @ampalibe.command('/create_archive')
@@ -87,16 +96,18 @@ def login(sender_id, cmd, **ext):
 
 @ampalibe.action('/is_record_finish')
 def is_record_finish(sender_id, cmd, **ext):
+    global var_records
     title = query.get_temp(sender_id, 'title')
     group_source = query.get_temp(sender_id, 'group_source')
     records = query.get_temp(sender_id, 'records')
-
-    if cmd == END_UPLOAD:
-        chat.send_text(sender_id, f"{records}")
+    if rapidfuzz.fuzz.ratio(cmd, END_UPLOAD) > 50:
+        chat.send_text(sender_id, f"Lesona enregistré, misaotra betsaka anao @anaran'Andriamanitra @fampandrosoana ny asany.")
         create_db_archive(title, group_source, records)
         is_continue(sender_id, chat, "")
+        var_records = []
     else:
-        query.set_temp(sender_id, 'records', f"{records}\n\n{cmd}" if records else cmd)
+        var_records.append(cmd)
+        query.set_temp(sender_id, 'records', var_records)
         chat.send_text(sender_id, f'alefaso ny manaraka na soraty ny hoe "{END_UPLOAD}"')
         query.set_action(sender_id, '/is_record_finish')
 
@@ -112,7 +123,7 @@ def use_keysearch(sender_id, cmd, **ext):
         get_title_archive(title) 
         for (title, match_in_percent, index) 
         in search_results 
-        if match_in_percent > 80
+        if match_in_percent > 50
     ]
     if len(archive_search_results) == 0:
         chat.send_text(sender_id, SEARCH_NOT_FOUND)
