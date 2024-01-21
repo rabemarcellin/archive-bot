@@ -19,9 +19,9 @@ BAD_CREDENTIALS_TEXT = env.get('BAD_CREDENTIALS_TEXT')
 SEARCH_NOT_FOUND = env.get('SEARCH_NOT_FOUND')
 END_UPLOAD = env.get('END_UPLOAD')
 
-ALL_ARCHIVES = get_all_archives()
-DATA_SEARCH = [archive['title'] for archive in ALL_ARCHIVES]
-RECORD_SEARCH = [archive['records'] for archive in ALL_ARCHIVES]
+all_archives = get_all_archives()
+DATA_SEARCH = [archive['title'] for archive in all_archives]
+RECORD_SEARCH = [archive['records'] for archive in all_archives]
 
 chat = Messenger()
 query = Model()
@@ -103,6 +103,7 @@ def is_record_finish(sender_id, cmd, **ext):
     if rapidfuzz.fuzz.ratio(cmd, END_UPLOAD) > 50:
         chat.send_text(sender_id, f"Lesona enregistré, misaotra betsaka anao @anaran'Andriamanitra @fampandrosoana ny asany.")
         create_db_archive(title, group_source, records)
+        all_archives = get_all_archives()
         is_continue(sender_id, chat, "")
         var_records = []
     else:
