@@ -97,6 +97,7 @@ def login(sender_id, cmd, **ext):
 @ampalibe.action('/is_record_finish')
 def is_record_finish(sender_id, cmd, **ext):
     global var_records
+    global all_archives
     title = query.get_temp(sender_id, 'title')
     group_source = query.get_temp(sender_id, 'group_source')
     records = query.get_temp(sender_id, 'records')
