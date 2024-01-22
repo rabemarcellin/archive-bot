@@ -35,12 +35,12 @@ var_records = []
 
 @ampalibe.command('/')
 def main(sender_id, cmd, **ext):
-    global is_logged
+    """ global is_logged
     if not is_logged:
         chat.send_text(sender_id, GET_PASSWORD_INPUT)
         query.set_action(sender_id, '/login')
-    else:
-        get_main_options(sender_id, chat)
+    else: """
+    get_main_options(sender_id, chat)
 
     
 @ampalibe.command('/get_archive')
