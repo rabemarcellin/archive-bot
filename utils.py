@@ -10,4 +10,4 @@ def load_search_data():
     all_archives = get_all_archives()
     DATA_SEARCH =  [archive['title'] for archive in all_archives]
     RECORD_SEARCH = [archive['records'] for archive in all_archives]
-    return list(set(DATA_SEARC) | set(RECORD_SEARCH))
+    return list(set(DATA_SEARCH) | set(RECORD_SEARCH))
