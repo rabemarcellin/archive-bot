@@ -2,12 +2,13 @@ import ampalibe
 from ampalibe import Model, Messenger
 from ampalibe.messenger import Filetype
 from os import environ as env
-from utils import is_user
+from utils import is_user, load_search_dat
 from views.action import get_main_options, is_continue, upload_archive_data
 from views.template import search_result_views
 from models.archive import create_db_archive, get_all_archives, get_title_archive, get_db_archive
 import rapidfuzz
 import re
+ 
 
 
 GET_PASSWORD_INPUT = env.get('GET_PASSWORD_INPUT')
@@ -120,7 +121,8 @@ def upload_archive(sender_id, cmd, **ext):
 @ampalibe.action('/keysearch')
 def use_keysearch(sender_id, cmd, **ext):
     keysearch = cmd
-    search_results = rapidfuzz.process.extract(keysearch, list(set(DATA_SEARCH) | set(RECORD_SEARCH)))
+    search_results = rapidfuzz.process.extract(keysearch, (()
+                                                            | ()))
     archive_search_results = [
         get_title_archive(title) 
         for (title, match_in_percent, index) 
