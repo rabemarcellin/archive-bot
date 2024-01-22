@@ -2,14 +2,13 @@ import ampalibe
 from ampalibe import Model, Messenger
 from ampalibe.messenger import Filetype
 from os import environ as env
-from utils import is_user, load_search_dat
+from utils import is_user, load_search_data
 from views.action import get_main_options, is_continue, upload_archive_data
 from views.template import search_result_views
 from models.archive import create_db_archive, get_all_archives, get_title_archive, get_db_archive
 import rapidfuzz
 import re
  
-
 
 GET_PASSWORD_INPUT = env.get('GET_PASSWORD_INPUT')
 GET_SEARCHKEY_INPUT = env.get('GET_SEARCHKEY_INPUT')
@@ -20,9 +19,7 @@ BAD_CREDENTIALS_TEXT = env.get('BAD_CREDENTIALS_TEXT')
 SEARCH_NOT_FOUND = env.get('SEARCH_NOT_FOUND')
 END_UPLOAD = env.get('END_UPLOAD')
 
-all_archives = get_all_archives()
-DATA_SEARCH = [archive['title'] for archive in all_archives]
-RECORD_SEARCH = [archive['records'] for archive in all_archives]
+DATA_SEARCH = load_search_data()
 
 chat = Messenger()
 query = Model()
@@ -98,16 +95,16 @@ def login(sender_id, cmd, **ext):
 @ampalibe.action('/is_record_finish')
 def is_record_finish(sender_id, cmd, **ext):
     global var_records
-    global all_archives
+    global DATA_SEARCH
     title = query.get_temp(sender_id, 'title')
     group_source = query.get_temp(sender_id, 'group_source')
     records = query.get_temp(sender_id, 'records')
     if rapidfuzz.fuzz.ratio(cmd, END_UPLOAD) > 50:
         chat.send_text(sender_id, f"Lesona enregistré, misaotra betsaka anao @anaran'Andriamanitra @fampandrosoana ny asany.")
-        create_db_archive(title, group_source, records)
-        all_archives = get_all_archives()
-        is_continue(sender_id, chat, "")
-        var_records = []
+        if create_db_archive(title, group_source, records):
+            DATA_SEARCH = load_search_data()
+            is_continue(sender_id, chat, "")
+            var_records = []
     else:
         var_records.append(cmd)
         query.set_temp(sender_id, 'records', var_records)
@@ -120,9 +117,9 @@ def upload_archive(sender_id, cmd, **ext):
 
 @ampalibe.action('/keysearch')
 def use_keysearch(sender_id, cmd, **ext):
+    global DATA_SEARCH
     keysearch = cmd
-    search_results = rapidfuzz.process.extract(keysearch, (()
-                                                            | ()))
+    search_results = rapidfuzz.process.extract(keysearch, DATA_SEARCH)
     archive_search_results = [
         get_title_archive(title) 
         for (title, match_in_percent, index) 
