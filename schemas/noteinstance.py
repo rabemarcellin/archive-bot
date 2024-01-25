@@ -1,4 +1,3 @@
-from bson.objectid import ObjectId
 from datetime import datetime
 
 
@@ -7,7 +6,7 @@ class NoteInstance:
     # means it will be deleted
     __is_deprecated = False
 
-    def __init__(self, note_id: ObjectId, text_alias: str) -> None:
+    def __init__(self, note_id, text_alias: str) -> None:
         self.note_id = note_id
         self.text_alias = text_alias
         self.last_call = datetime.now()
