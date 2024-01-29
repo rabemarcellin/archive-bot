@@ -2,7 +2,7 @@
   "get note": "Voir une note",
   "create note": "Créer une note",
   "ROOT_OPTIONS_HEADER": "Bienvenue",
-  "research": "Rechercher",
+  "research": "Refaire la recherche",
   "go main menu": "Retourner au menu",
   "default options header": "Qu'allez vous faire pour la suite ?",
   "confirm create note": "Poursuivre",
@@ -36,6 +36,11 @@
     "\t* La note en question, peut être dégrouper en plusieurs messages."
   ],
   "BAD_CREDENTIALS": "Mot de passe incorrect",
-  "SEARCH_NOT_FOUND": "aucun resultat trouvé",
-  "FINISH_INPUT_NOTE": "arshi_end"
+  "search not found": "aucune note trouvée",
+  "FINISH_INPUT_NOTE": "arshi_end",
+  "end records": "Terminer",
+  "libraries": "Bibliothèques",
+  "edit key": "Modifier la clé",
+  "update key": "Appliquer",
+  "reedit key": "Réessayer"
 }

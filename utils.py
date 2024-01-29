@@ -22,6 +22,6 @@ def get_sentence(sentence_key):
 
 def load_search_data(note_model):
     all_archives = note_model.get_all()
-    DATA_SEARCH =  [archive['title'] for archive in all_archives]
-    RECORD_SEARCH = [archive['records'] for archive in all_archives]
+    DATA_SEARCH =  [archive.title for archive in all_archives]
+    RECORD_SEARCH = [archive.records for archive in all_archives]
     return DATA_SEARCH + RECORD_SEARCH

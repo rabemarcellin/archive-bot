@@ -16,7 +16,13 @@ commands = {
     "generate own key": build_command("generate_own_key"),
     "generate random key": build_command("generate_random_key"),
     "create another note": build_command("create_another_note"),
-    "register note": build_command("register note")
+    "register note": build_command("register note"),
+    "end records": build_command("end_records"),
+    "libraries": build_command("libraries"),
+    "edit key": build_command("edit_key"),
+    "update key": build_command("update_key"),
+    "reedit key": build_command("reedit_key"),
+    "render secure note": build_command("render_secure_note")
 }
 
 actions = {
@@ -27,10 +33,14 @@ actions = {
     "prompt source ref": build_command("prompt_source_ref"),
     "prompt records": build_command("prompt_records"),
     "prompt key": build_command("prompt_key"),
-    "register note": build_command("register_note")
+    "generate key": build_command("generate_key"),
+    "register note": build_command("register_note"),
+    "edit key": build_command("edit key"),
+    "prompt new key": build_command("prompt new key")
 }
 
 persistent_menu = [
+    Button(type='postback', title=get_sentence("libraries"), payload=Payload(commands["libraries"])),
     Button(type='postback', title=get_sentence("get note"), payload=Payload(commands["get note"])),
     Button(type='postback', title=get_sentence("create note"), payload=Payload(commands["create note"]))
 ]
@@ -74,7 +84,7 @@ exist_options = {
     ),
      "research": QuickReply(
         title=get_sentence("research"),
-        payload=Payload(commands["research"]),
+        payload=Payload(commands["get note"]),
         name="research a note",
         ref=f"{fake.ean(length=13)}"
     ),
@@ -94,6 +104,36 @@ exist_options = {
         title=get_sentence("random key"),
         payload=Payload(commands["generate random key"]),
         name="generate random key",
+        ref=f"{fake.ean(length=13)}"
+    ),
+    "end records": QuickReply(
+        title=get_sentence("end records"),
+        payload=Payload(commands["end records"]),
+        name="end records",
+        ref=f"{fake.ean(length=13)}"
+    ),
+    "libraries": QuickReply(
+        title=get_sentence("libraries"),
+        payload=Payload(commands["libraries"]),
+        name="end records",
+        ref=f"{fake.ean(length=13)}"
+    ),
+     "update key": QuickReply(
+        title=get_sentence("update key"),
+        payload=Payload(commands["update key"]),
+        name="end records",
+        ref=f"{fake.ean(length=13)}"
+    ),
+    "reedit key": QuickReply(
+        title=get_sentence("reedit key"),
+        payload=Payload(commands["reedit key"]),
+        name="end records",
+        ref=f"{fake.ean(length=13)}"
+    ),
+    "edit key": QuickReply(
+        title=get_sentence("reedit key"),
+        payload=Payload(commands["edit key"]),
+        name="end records",
         ref=f"{fake.ean(length=13)}"
     ),
 }

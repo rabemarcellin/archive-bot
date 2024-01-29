@@ -1,5 +1,6 @@
 import schedule
 import time
+import bcrypt
 from schemas.noteinstance import NoteInstance
 from .collection import Collection
 
@@ -14,11 +15,36 @@ class NoteInstanceModel(Collection):
         ).inserted_id
         return note_instance_id
     
-    def get_by_key(self, key):
-        db_note = self.collection.find_one({"text_alias": key})
-        note_instance = NoteInstance(note_id=db_note['note_id'], text_alias=db_note["text_alias"])
-        note_instance.set_id(db_note['_id'])
+    def get_by_key(self, sender_id, key):
+        note_founds = self.collection.find({"sender_id": sender_id})
+       
+        for note in note_founds:
+            if bcrypt.checkpw(key.encode('utf-8'), note['key']):
+                note_instance = NoteInstance(note_id=note['note_id'], sender_id=note['sender_id'], key=note['key'].decode('utf-8'))
+                note_instance.set_id(note['_id'])
+                return note_instance
+    
+    def get_by_noteid(self, note_id):
+        note = self.collection.find({"note_id": note_id})
+        note_instance = NoteInstance(note_id=note['note_id'], sender_id=note['sender_id'], key=note['key'].decode('utf-8'))
+        note_instance.set_id(note['_id'])
         return note_instance
+    
+    def update_key(self, note_id, new_key):
+        return self.collection.update_one(
+            {"note_id": note_id},
+            { "$set": { "key": bcrypt.hashpw(new_key.encode('utf-8'), bcrypt.gensalt())}}
+        )
+    
+    def get_specific(self, note_id, key):
+        note_founds = self.collection.find({"note_id": note_id})
+       
+        for note in note_founds:
+            if bcrypt.checkpw(key.encode('utf-8'), note['key']):
+                note_instance = NoteInstance(note_id=note['note_id'], sender_id=note['sender_id'], key=note['key'].decode('utf-8'))
+                note_instance.set_id(note['_id'])
+                return note_instance
+       
     
     def have_changing(self):
         with self.collection.watch() as stream:

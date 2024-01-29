@@ -6,6 +6,11 @@ class NoteModel(Collection):
     def __init__(self, collection_name):
         super().__init__(collection_name)
 
+    def get_all(self):
+        notes = super().get_all()
+        return [Note(title=db_note['title'], source_ref=db_note['source_ref'], records=db_note['records']).set_id(db_note['_id']) for db_note in notes]
+
+
     def create(self, note: Note):
         note_id = self.collection.insert_one(
             note.db_instance()

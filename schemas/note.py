@@ -5,7 +5,8 @@ class Note:
         self.records = records
 
     def set_id(self, id):
-        self.__id = id
+        self._id = id
+        return self
     
     def db_instance(self) -> dict:
         return {
