@@ -28,7 +28,8 @@ def main(sender_id, cmd, **ext):
 @ampalibe.command(commands["libraries"])
 @mainview.render
 def get_libraries(sender_id, cmd, **ext):
-    notes = note_model.get_all()
+    user_note_ids = note_instance_model.get_users_id(sender_id)
+    notes = note_model.get_user_libraries(user_note_ids)
     render_note_items(sender_id, notes)
 
 @ampalibe.command(commands["research"])

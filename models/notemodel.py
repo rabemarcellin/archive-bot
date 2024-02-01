@@ -1,3 +1,5 @@
+from bson import ObjectId
+from typing import Tuple
 from .collection import Collection
 from schemas.note import Note
 
@@ -17,6 +19,16 @@ class NoteModel(Collection):
         ).inserted_id
         return note_id
     
+    def get_by_id(self, id) -> Note:
+        note_dict = self.collection.find_one({"_id": ObjectId(id)})
+        note = Note(title=note_dict['title'], source_ref=note_dict['source_ref'], records=note_dict['records'])
+        note.set_id(note_dict['_id'])
+        return note
+    
+    def get_user_libraries(self, note_ids: Tuple[str]) -> Tuple[Note]:
+        user_notes = [self.get_by_id(note_id) for note_id in note_ids]
+        return tuple(user_notes)
+
     def get_by_title(self, title) -> Note:
         db_note = self.collection.find_one({"title": title})
         note = Note(title=db_note['title'], source_ref=db_note['source_ref'], records=db_note['records'])

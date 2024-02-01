@@ -38,7 +38,7 @@ class NoteQuery:
             assert self.is_finish == True
             assert self.title is not None
             assert self.source_ref is not None
-            assert len(self.records) is not 0
+            assert len(self.records) != 0
             return True
         except:
             return False
