@@ -1,25 +1,32 @@
 from ampalibe import Payload
 from ampalibe.ui import Element, Button, Type
+from globalinstance import chat
+from utils import get_sentence
+from datas import commands
 
-def search_result_views(sender_id, chat, archives):
-    list_items = []
-    
-    for archive in archives:
+def render_note_items(sender_id, notes):
+    note_items = []
+    for note in notes:
         buttons = [
             Button(
                 type=Type.postback,
                 title="voir",
-                payload=Payload(f"/archive {archive['_id']}", id_item=archive['_id']),
-            )
+                payload=Payload(commands["render secure note"], note_id=note._id),
+            ),
+            Button(
+                type=Type.postback,
+                title=get_sentence("edit key"),
+                payload=Payload(commands["edit key"], note_id=note._id),
+            ),
         ]
 
-        list_items.append(
+        note_items.append(
             Element(
-                title=f"""{archive['title']}
-                groupe: {archive['group_source']}
+                title=f"""{note.title}
+                \nsource: {note.source_ref}
                 """,
                 buttons=buttons,
             )
         )
 
-    chat.send_generic_template(sender_id, list_items, next=True)
+    chat.send_generic_template(sender_id, note_items, next='Page suivante')

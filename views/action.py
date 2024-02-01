@@ -1,64 +1,52 @@
 from ampalibe import Payload
 from ampalibe.ui import QuickReply
-from os import environ as env
-
-GET_ARCHIVE_TEXT = env.get('GET_ARCHIVE_TEXT')
-CREATE_ARCHIVE_TEXT = env.get('CREATE_ARCHIVE_TEXT')
-MAIN_WAY_TEXT = env.get('MAIN_WAY_TEXT')
-CONTINUE_TEXT = env.get('CONTINUE_TEXT')
-GOBACK_TEXT = env.get('GOBACK_TEXT')
-GOBACK_MAIN = env.get('GOBACK_MAIN')
-LOGOUT_TEXT = env.get('LOGOUT_TEXT')
-CONFIRM_TEXT = env.get('CONFIRM_TEXT')
-GET_GROUP_INPUT = env.get('GET_GROUP_INPUT')
-GET_RECORD_INPUT = env.get('GET_RECORD_INPUT')
-
-def get_main_options(sender_id, chat):
-    quick_rep = [
-        QuickReply(
-            title=GET_ARCHIVE_TEXT,
-            payload=Payload('/get_archive', name='get_archive', ref='fsdacjfklqsjdm789779')
-        ),
-        QuickReply(
-            title=CREATE_ARCHIVE_TEXT,
-            payload=Payload('/create_archive', name='create_archive', ref='fdsjqk4654654fsdfs')
-        )
-    ]
-    chat.send_quick_reply(sender_id, quick_rep, MAIN_WAY_TEXT)
-
-def is_continue(sender_id, chat, command_name):
-    quick_rep = [
-        QuickReply(
-            title=CONTINUE_TEXT if command_name != "" else GOBACK_MAIN,
-            payload=Payload(f'/{command_name}', name= command_name, ref='fsdacfsdfdsqmj778er')
-        ),
-        QuickReply(
-            title=GOBACK_TEXT,
-            payload=Payload('/', name='main', ref='ffdsfsdf7897fds')
-        ),
-        QuickReply(
-            title=LOGOUT_TEXT,
-            payload=Payload('/logout', name='logout', ref='jljmlkj798d7fsf')
-        )
-    ]
-    chat.send_quick_reply(sender_id, quick_rep, CONFIRM_TEXT)
+from utils import get_sentence
+from globalinstance import chat, query
+from datas import exist_options, actions
 
 
-def upload_archive_data(sender_id, chat, query, cmd):
-    is_finish = query.get_temp(sender_id, 'is_finish')
-    title = query.get_temp(sender_id, 'title')
-    group_source = query.get_temp(sender_id, 'group_source')
-    records = query.get_temp(sender_id, 'records')
+def send_options(sender_id, default=False, options=[],
+                 header_text=get_sentence("default options header")):
+    selected_options = []
+    if default:
+       selected_options.append(exist_options["go main menu"]) 
+    else:
+        for option in options:
+            selected_options.append(exist_options[option])
+    chat.send_quick_reply(sender_id, selected_options, header_text)
 
-    if not title:
-        query.set_temp(sender_id, 'title', cmd)
+def generate_key_options(sender_id):
+    chat.send_text(sender_id, get_sentence("create note successfully"))
+    chat.send_text(sender_id, get_sentence("generate key instruction")) 
+    send_options(
+        sender_id, 
+        header_text=get_sentence("generate key header"), 
+        options=["generate own key", "generate random key"]
+    )
+    query.set_action(sender_id, actions["generate key"])
 
-    if not group_source:
-        query.set_temp(sender_id, 'group_source', True)
-        chat.send_text(sender_id, GET_GROUP_INPUT)
-        return query.set_action(sender_id, '/upload_archive')
+def prompt_note(sender_id):
+    chat.send_text(sender_id, get_sentence("input key note"))
+    query.set_action(sender_id, actions["prompt note"])
 
-    if not is_finish and not records:
-        query.set_temp(sender_id, 'group_source', cmd)
-        chat.send_text(sender_id, GET_RECORD_INPUT)
-        return query.set_action(sender_id, '/is_record_finish')    
+def prompt_key(sender_id):
+    query.set_temp(sender_id, 'notekey', None)
+    chat.send_text(sender_id, get_sentence("input key"))
+    query.set_action(sender_id, actions["generate key"])
+
+def prompt_title(sender_id, notequery):
+    if notequery.title is None:
+        chat.send_text(sender_id, get_sentence("INPUT_TITLE"))
+        return query.set_action(sender_id, actions["prompt title"])
+
+def prompt_source_ref(sender_id, notequery):
+    if notequery.source_ref is None:
+        chat.send_text(sender_id, get_sentence("INPUT_SOURCE_REFERENCE"))
+        return query.set_action(sender_id, actions["prompt source ref"])
+
+def prompt_records(sender_id, notequery):
+    if len(notequery.records) == 0:
+        chat.send_text(sender_id, get_sentence("INPUT_NOTE"))
+    elif len(notequery.records) > 0:
+        send_options(sender_id, header_text="**_**", options=["end records"])
+    return query.set_action(sender_id, actions["prompt records"])
